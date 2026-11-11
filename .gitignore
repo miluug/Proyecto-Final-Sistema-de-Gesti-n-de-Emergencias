@@ -1,0 +1,6 @@
+/_build/
+/deps/
+/datos_test/
+/datos_demo/
+erl_crash.dump
+*.beam
