@@ -5,8 +5,8 @@ defmodule Emergencias.Comandos do
   solo convierte texto en datos, valida el formato de las entradas y muestra
   el resultado.
 
-  Flujo de `ejecutar/2`:
-    1. `tokenizar/1` (RECURSIVA) separa la línea en palabras respetando comillas.
+  Flujo de 'ejecutar/2':
+    1. 'tokenizar/1' (RECURSIVA) separa la línea en palabras respetando comillas.
     2. Se verifica que el comando exista y que el rol del usuario lo permita.
     3. Se separan los argumentos posicionales de las opciones clave=valor.
     4. Se VALIDAN las entradas (números, opciones, existencia de zonas...) ANTES
@@ -24,7 +24,7 @@ defmodule Emergencias.Comandos do
   # Claves que se aceptan como opciones clave=valor
   @opciones ~w(zona tipo prioridad estado categoria ubicacion especie nombre edad afectados para caracteristicas)
 
-  @doc "Ejecuta una línea de comando en nombre de `usuario` (%Usuario{})."
+  @doc "Ejecuta una línea de comando en nombre de 'usuario' (%Usuario{})."
   def ejecutar(linea, %Usuario{} = usuario) do
     resultado =
       case tokenizar(linea) do
@@ -154,7 +154,7 @@ defmodule Emergencias.Comandos do
 
   defp despachar("zone_status", [codigo], _opc, _u), do: Reportes.estado_zona(codigo)
 
-   # NECESIDADES
+  # NECESIDADES
 
   defp despachar("register_need", [tipo, cantidad, prioridad, zona | palabras], opc, u) when palabras != [] do
     with {:ok, tipo} <- Comun.opcion(tipo, Necesidad.tipos(), "Tipo de necesidad"),
@@ -391,13 +391,55 @@ defmodule Emergencias.Comandos do
     end
   end
 
+  # ALBERGUES
+
+  defp despachar("register_shelter", [codigo, nombre, zona, capacidad], _opc, _u) do
+    with {:ok, capacidad} <- Comun.positivo(capacidad, "La capacidad"),
+         :ok <- validar_zona(zona),
+         {:ok, albergue} <- Albergues.registrar(codigo, nombre, zona, capacidad) do
+      {:ok, "Albergue registrado: #{albergue}"}
+    end
+  end
+
+  defp despachar("check_shelter", [codigo], _opc, _u) do
+    with {:ok, albergue} <- Albergues.obtener(codigo) do
+      recursos = Inventario.listar([{:ubicacion, codigo}])
+      necesidades = Necesidades.listar([{:asociado_a, codigo}])
+      ocupantes = albergue.ocupantes |> MapSet.to_list() |> Enum.sort() |> Enum.join(", ")
+
+      {:ok,
+       "#{albergue}\nPersonas alojadas: #{ocupantes}\n" <>
+         Formato.lista("Recursos en el albergue", recursos) <>
+         "\n" <> Formato.lista("Necesidades del albergue", necesidades)}
+    end
+  end
+
+  defp despachar("list_shelters", [], _opc, _u), do: {:ok, Formato.lista("Albergues", Albergues.listar())}
+
+  defp despachar("register_entry", [codigo, documento], _opc, u) do
+    with {:ok, documento} <- validar_documento(documento),
+         {:ok, albergue} <- Albergues.ingreso(codigo, documento) do
+      {:ok, "Ingreso registrado. #{albergue}" <> actualizar_persona_en_albergue(documento, u)}
+    end
+  end
+
+  defp despachar("register_exit", [codigo, documento], _opc, _u) do
+    case Albergues.salida(codigo, documento) do
+      {:ok, albergue} -> {:ok, "Salida registrada. #{albergue}"}
+      error -> error
+    end
+  end
+
+  defp despachar("shelter_ranking", [], _opc, _u) do
+    {:ok, Formato.lista("Albergues con mayor ocupación", Albergues.ranking_ocupacion())}
+  end
 
   # Si el comando existe pero los argumentos no coinciden con ninguna forma válida
   defp despachar(comando, _posicionales, _opciones, _u) do
     {:error, "Argumentos incorrectos. Uso: #{Permisos.uso(comando)}"}
   end
 
-  # Validaciones de entrada
+  #  Validaciones de entrada
 
   defp validar_zona(zona) do
     if Zonas.existe?(zona), do: :ok, else: {:error, "La zona '#{zona}' no está registrada (use register_zone)"}
@@ -414,4 +456,51 @@ defmodule Emergencias.Comandos do
     end
   end
 
+  defp validar_destinatario(destinatario) do
+    cond do
+      String.starts_with?(destinatario, "familia:") -> :ok
+      Familias.existe?(destinatario) -> :ok
+      true -> {:error, "No hay una persona registrada con documento '#{destinatario}' (o use familia:apellido)"}
+    end
+  end
+
+  defp validar_documento(documento) do
+    if String.contains?(documento, [",", " "]) or documento == "" do
+      {:error, "Documento inválido: '#{documento}'"}
+    else
+      {:ok, documento}
+    end
+  end
+
+  defp validar_edad(nil), do: {:ok, nil}
+
+  defp validar_edad(texto) do
+    case Comun.no_negativo(texto, "La edad") do
+      {:ok, edad} when edad <= 120 -> {:ok, edad}
+      {:ok, _edad} -> {:error, "La edad no es válida"}
+      error -> error
+    end
+  end
+
+  defp tipo_reporte(tipo) when tipo in ["lost", "perdida"], do: {:ok, :perdida}
+  defp tipo_reporte(tipo) when tipo in ["found", "encontrada"], do: {:ok, :encontrada}
+  defp tipo_reporte(tipo), do: {:error, "Tipo de reporte inválido '#{tipo}'. Use lost o found"}
+
+  # Al ingresar a un albergue, si la persona está registrada su estado pasa a en_albergue
+  defp actualizar_persona_en_albergue(documento, u) do
+    case Familias.obtener(documento) do
+      {:ok, %Persona{estado: :en_albergue}} ->
+        ""
+
+      {:ok, _persona} ->
+        case Familias.cambiar_estado(documento, :en_albergue, u.usuario) do
+          {:ok, persona} -> "\nEstado de la persona actualizado: #{persona}"
+          {:error, mensaje} -> "\n(No se cambió el estado de la persona: #{mensaje})"
+        end
+
+      {:error, _mensaje} ->
+        "\n(La persona no está registrada en el sistema de familiares)"
+    end
+  end
+  
 end
