@@ -7,13 +7,22 @@ defmodule Emergencias.Application do
   y como cada GenServer vuelve a leer sus archivos de texto en `init/1`,
   el estado se recupera sin afectar a los demás componentes.
   """
+  
   use Application
 
   @impl true
   def start(_tipo, _argumentos) do
     hijos = [
+      # Proceso independiente (spawn + receive) que registra la actividad
+      Emergencias.Bitacora,
       # Componentes con estado (GenServer)
       Emergencias.Usuarios,
+      Emergencias.Zonas,
+      Emergencias.Inventario,
+      Emergencias.Necesidades,
+      Emergencias.Familias,
+      Emergencias.Mascotas,
+      Emergencias.Albergues,
       # Supervisor dinámico: un proceso de sesión por cada usuario conectado
       Emergencias.SesionesSupervisor
     ]
