@@ -17,9 +17,9 @@ defmodule Emergencias.Comandos do
   situaciones esperadas.
   """
 
-  alias Emergencias.{Albergues, Bitacora, Comun, Familias, Inventario, Necesidades}
+  alias Emergencias.{Albergues, Bitacora, Comun, Familias, Inventario, Mascotas, Necesidades}
   alias Emergencias.{Formato, Permisos, Reportes, Usuarios, Zonas}
-  alias Emergencias.Dominio.{Necesidad, Recurso, Usuario, Zona}
+  alias Emergencias.Dominio.{Mascota, Mensaje, Necesidad, Persona, Recurso, Usuario, Zona}
 
   # Claves que se aceptan como opciones clave=valor
   @opciones ~w(zona tipo prioridad estado categoria ubicacion especie nombre edad afectados para caracteristicas)
@@ -282,6 +282,114 @@ defmodule Emergencias.Comandos do
     {:ok, Formato.lista("Recursos críticos", criticos)}
   end
 
+  # COMUNICACIÓN ENTRE FAMILIARES
+
+  defp despachar("report_person", [documento, nombre, zona, estado], opc, u) do
+    with {:ok, documento} <- validar_documento(documento),
+         {:ok, estado} <- Comun.opcion(estado, Persona.estados(), "Estado"),
+         {:ok, edad} <- validar_edad(Map.get(opc, "edad")),
+         :ok <- validar_zona(zona),
+         {:ok, persona} <-
+           Familias.reportar(%{documento: documento, nombre: nombre, edad: edad, zona: zona, estado: estado}, u.usuario) do
+      {:ok, "Persona registrada: #{persona}"}
+    end
+  end
+
+  defp despachar("update_person", [documento, estado], _opc, u) do
+    with {:ok, estado} <- Comun.opcion(estado, Persona.estados(), "Estado"),
+         {:ok, persona} <- Familias.cambiar_estado(documento, estado, u.usuario) do
+      {:ok, "Estado actualizado: #{persona}"}
+    end
+  end
+
+  defp despachar("find_person", [documento], _opc, _u) do
+    case Familias.obtener(documento) do
+      {:ok, persona} -> {:ok, "Encontrada: #{persona}"}
+      error -> error
+    end
+  end
+
+  defp despachar("find_person", [], opc, _u) when map_size(opc) > 0 do
+    with {:ok, filtros} <- Comun.filtros(opc, [:nombre, :zona, :estado]) do
+      {:ok, Formato.lista("Personas encontradas", Familias.buscar(filtros))}
+    end
+  end
+
+  defp despachar("person_history", [documento], _opc, _u) do
+    with {:ok, persona} <- Familias.obtener(documento) do
+      cambios =
+        persona.historial
+        |> Enum.reverse()
+        |> Enum.map(fn {fecha, anterior, nuevo, usuario} -> "#{fecha}: #{anterior} -> #{nuevo} (por #{usuario})" end)
+
+      {:ok, "#{persona}\n" <> Formato.lista("Historial de estados", cambios)}
+    end
+  end
+
+  defp despachar("send_family_message", [destinatario | palabras], _opc, u) when palabras != [] do
+    with :ok <- validar_destinatario(destinatario),
+         {:ok, mensaje} <- Familias.enviar_mensaje(destinatario, Enum.join(palabras, " "), u.usuario) do
+      {:ok, "Mensaje guardado: #{mensaje}"}
+    end
+  end
+
+  defp despachar("list_family_messages", [destinatario], _opc, _u) do
+    {:ok, Formato.lista("Mensajes para #{destinatario}", Familias.mensajes(destinatario))}
+  end
+
+  defp despachar("mark_message", [id, estado], _opc, _u) do
+    with {:ok, estado} <- Comun.opcion(estado, Mensaje.estados(), "Estado del mensaje"),
+         {:ok, mensaje} <- Familias.marcar_mensaje(id, estado) do
+      {:ok, "Mensaje actualizado: #{mensaje}"}
+    end
+  end
+
+  # MASCOTAS
+
+  defp despachar("report_pet", [tipo, especie, nombre, color, tamano, zona, contacto], opc, _u) do
+    with {:ok, tipo} <- tipo_reporte(tipo),
+         {:ok, especie} <- Comun.texto(especie, "La especie"),
+         {:ok, tamano} <- Comun.opcion(tamano, Mascota.tamanos(), "Tamaño"),
+         :ok <- validar_zona(zona) do
+      datos = %{
+        tipo: tipo,
+        especie: String.downcase(especie),
+        nombre: nombre,
+        caracteristicas: Map.get(opc, "caracteristicas", ""),
+        color: String.downcase(color),
+        tamano: tamano,
+        zona: zona,
+        contacto: contacto
+      }
+
+      case Mascotas.reportar(datos) do
+        {:ok, reporte} -> {:ok, "Reporte registrado: #{reporte}"}
+        error -> error
+      end
+    end
+  end
+
+  defp despachar("list_pets", [], opc, _u) do
+    with {:ok, filtros} <- Comun.filtros(opc, [:especie, :zona, :estado, :tipo]) do
+      {:ok, Formato.lista("Reportes de mascotas", Mascotas.listar(filtros))}
+    end
+  end
+
+  defp despachar("match_pets", [], _opc, _u) do
+    coincidencias =
+      Enum.map(Mascotas.buscar_coincidencias(), fn {perdida, encontrada, puntaje} ->
+        "#{perdida.id} (perdida, #{perdida.nombre}) <-> #{encontrada.id} (encontrada) | puntaje #{puntaje}/100"
+      end)
+
+    {:ok, Formato.lista("Posibles coincidencias (umbral #{Mascota.umbral()})", coincidencias)}
+  end
+
+  defp despachar("confirm_match", [id_1, id_2], _opc, _u) do
+    case Mascotas.confirmar(id_1, id_2) do
+      {:ok, a, b} -> {:ok, "Coincidencia confirmada. Reportes cerrados:\n  #{a}\n  #{b}"}
+      error -> error
+    end
+  end
 
 
   # Si el comando existe pero los argumentos no coinciden con ninguna forma válida
