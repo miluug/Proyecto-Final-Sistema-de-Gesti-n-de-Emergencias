@@ -11,9 +11,12 @@ defmodule Emergencias.MixProject do
     ]
   end
 
+  # La aplicación arranca el árbol de supervisión definido en Emergencias.Application.
+  # :crypto se usa para guardar las contraseñas cifradas (hash SHA-256).
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :crypto],
+      mod: {Emergencias.Application, []}
     ]
   end
 end
