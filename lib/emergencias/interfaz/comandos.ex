@@ -16,10 +16,11 @@ defmodule Emergencias.Comandos do
   Siempre retorna {:ok, texto} o {:error, texto}; nunca lanza errores por
   situaciones esperadas.
   """
-  alias Emergencias.Bitacora
-  alias Emergencias.Permisos
-  alias Emergencias.Dominio.Usuario
-  
+
+  alias Emergencias.{Bitacora, Comun}
+  alias Emergencias.{Formato, Permisos, Reportes, Usuarios, Zonas}
+  alias Emergencias.Dominio.{Usuario, Zona}
+
   # Claves que se aceptan como opciones clave=valor
   @opciones ~w(zona tipo prioridad estado categoria ubicacion especie nombre edad afectados para caracteristicas)
 
@@ -95,9 +96,74 @@ defmodule Emergencias.Comandos do
     end)
   end
 
+  # GENERALES
+
+  defp despachar("help", [], _opc, u) do
+    {:ok, "Comandos disponibles para #{u.tipo}:\n" <> Enum.map_join(Permisos.disponibles(u.tipo), "\n", &"  #{&1}") <> "\n  disconnect"}
+  end
+
+  defp despachar("whoami", [], _opc, u), do: {:ok, "Conectado como #{u}"}
+
+  defp despachar("summary", [], _opc, _u), do: {:ok, Reportes.resumen()}
+
+  defp despachar("list_users", [], _opc, _u) do
+    conectados = Usuarios.conectados()
+
+    texto =
+      Usuarios.listar()
+      |> Enum.map(fn usuario -> if MapSet.member?(conectados, usuario.usuario), do: "#{usuario} [conectado]", else: "#{usuario}" end)
+      |> then(&Formato.lista("Usuarios", &1))
+
+    {:ok, texto}
+  end
+
+  defp despachar("activity", argumentos, _opc, _u) when length(argumentos) <= 1 do
+    registros = Bitacora.consultar(List.first(argumentos))
+    {:ok, Formato.lista("Actividad registrada", registros)}
+  end
+
+  # ZONAS
+
+  defp despachar("register_zone", [codigo, nombre, nivel], opc, _u) do
+    with {:ok, nivel} <- Comun.opcion(nivel, Zona.niveles(), "Nivel de afectación"),
+         {:ok, afectados} <- Comun.no_negativo(Map.get(opc, "afectados", "0"), "El número de afectados"),
+         {:ok, zona} <- Zonas.registrar_zona(codigo, nombre, nivel, afectados) do
+      {:ok, "Zona registrada: #{zona}"}
+    end
+  end
+
+  defp despachar("register_sector", [zona, codigo, nombre, nivel, afectados], _opc, _u) do
+    with {:ok, nivel} <- Comun.opcion(nivel, Zona.niveles(), "Nivel de afectación"),
+         {:ok, afectados} <- Comun.no_negativo(afectados, "El número de afectados"),
+         {:ok, sector} <- Zonas.registrar_sector(zona, codigo, nombre, nivel, afectados) do
+      {:ok, "Sector #{sector.codigo} registrado en la zona #{zona}"}
+    end
+  end
+
+  defp despachar("register_point", [zona, sector, codigo, nombre, afectados], _opc, _u) do
+    with {:ok, afectados} <- Comun.no_negativo(afectados, "El número de afectados"),
+         {:ok, punto} <- Zonas.registrar_punto(zona, sector, codigo, nombre, afectados) do
+      {:ok, "Punto de atención #{punto.codigo} registrado en #{zona}/#{sector}"}
+    end
+  end
+
+  defp despachar("list_zones", [], _opc, _u) do
+    zonas = Enum.map(Zonas.listar(), fn z -> "#{z} | acumulado #{Zona.total_afectados(z)}" end)
+    {:ok, Formato.lista("Zonas", zonas)}
+  end
+
+  defp despachar("zone_status", [codigo], _opc, _u), do: Reportes.estado_zona(codigo)
+
+
   # Si el comando existe pero los argumentos no coinciden con ninguna forma válida
   defp despachar(comando, _posicionales, _opciones, _u) do
     {:error, "Argumentos incorrectos. Uso: #{Permisos.uso(comando)}"}
+  end
+
+  # Validaciones de entrada
+
+  defp validar_zona(zona) do
+    if Zonas.existe?(zona), do: :ok, else: {:error, "La zona '#{zona}' no está registrada (use register_zone)"}
   end
 
 end
