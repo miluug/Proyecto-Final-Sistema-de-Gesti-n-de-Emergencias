@@ -1,6 +1,6 @@
 defmodule Emergencias.Zonas do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer que guarda las zonas %{codigo => %Zona{}}.
+  GenServer que guarda las zonas %{codigo => %Zona{}}.
   Las reglas y la recursión sobre zona -> sectores -> puntos están en
   `Emergencias.Dominio.Zona`.
   """
@@ -11,7 +11,7 @@ defmodule Emergencias.Zonas do
 
   @archivo "zonas.txt"
 
-  #  API 
+  #  API
 
   def start_link(_opciones), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
 

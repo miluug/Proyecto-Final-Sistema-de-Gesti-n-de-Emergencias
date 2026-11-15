@@ -1,6 +1,6 @@
 defmodule Emergencias.Mascotas do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer de reportes de mascotas perdidas y encontradas.
+  GenServer de reportes de mascotas perdidas y encontradas.
   El criterio de similitud y las reglas están en `Emergencias.Dominio.Mascota`.
   """
   use GenServer

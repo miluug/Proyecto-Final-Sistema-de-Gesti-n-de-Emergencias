@@ -1,6 +1,6 @@
 defmodule Emergencias.Registros do
   @moduledoc """
-  PERSISTENCIA (el CÓMO): convierte los structs del dominio en listas de
+  convierte los structs del dominio en listas de
   campos de texto (una línea del archivo) y viceversa.
 
   Así el dominio no sabe cómo se guarda la información: si mañana se
@@ -12,7 +12,7 @@ defmodule Emergencias.Registros do
     Albergue, Mascota, Mensaje, Movimiento, Necesidad, Persona, PuntoAtencion, Recurso, Sector, Usuario, Zona
   }
 
-  # ---------------- struct -> campos (pattern matching por tipo de struct) ----------------
+  #  struct - campos (pattern matching por tipo de struct)
 
   def a_campos(%Usuario{} = u), do: [u.usuario, u.clave_hash, u.nombre, u.tipo, u.zona]
 
@@ -33,7 +33,7 @@ defmodule Emergencias.Registros do
     [a.codigo, a.nombre, a.zona, a.capacidad, a.ocupantes |> MapSet.to_list() |> Enum.sort() |> Enum.join(",")]
   end
 
-  # ---------------- campos -> struct ----------------
+  #  campos - struct
 
   def de_campos(:usuario, [usuario, clave_hash, nombre, tipo, zona]) do
     %Usuario{usuario: usuario, clave_hash: clave_hash, nombre: nombre, tipo: Comun.atomo(tipo, Usuario.tipos()), zona: zona}
@@ -128,7 +128,7 @@ defmodule Emergencias.Registros do
     }
   end
 
-  # ---------------- Zonas: estructura jerárquica en 3 tipos de línea ----------------
+  #  Zonas: estructura jerárquica en 3 tipos de línea 
   #   ZONA|codigo|nombre|nivel|afectados
   #   SECTOR|zona|codigo|nombre|nivel|afectados
   #   PUNTO|zona|sector|codigo|nombre|afectados

@@ -1,6 +1,6 @@
 defmodule Emergencias.Albergues do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer de albergues. Las reglas de capacidad están
+  GenServer de albergues. Las reglas de capacidad están
   en `Emergencias.Dominio.Albergue`. Como todos los ingresos pasan por este
   proceso (uno a la vez), dos ingresos simultáneos nunca superan la capacidad.
   """
@@ -11,7 +11,7 @@ defmodule Emergencias.Albergues do
 
   @archivo "albergues.txt"
 
-  # ---------------- API ----------------
+  #  API
 
   def start_link(_opciones), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
 
@@ -26,7 +26,7 @@ defmodule Emergencias.Albergues do
   def ranking_ocupacion, do: Albergue.ranking(listar())
   def reiniciar, do: GenServer.call(__MODULE__, :reiniciar)
 
-  # ---------------- Callbacks ----------------
+  #  Callbacks
 
   @impl true
   def init(:ok) do
@@ -78,7 +78,7 @@ defmodule Emergencias.Albergues do
     {:reply, :ok, %{}}
   end
 
-  # ---------------- Auxiliares ----------------
+  #  Auxiliares 
 
   defp buscar(albergues, codigo) do
     case Map.fetch(albergues, codigo) do

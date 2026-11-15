@@ -11,11 +11,11 @@ end
 
 defmodule Emergencias.Dominio.Zona do
   @moduledoc """
-  DOMINIO (el QUÉ): zona afectada con estructura jerárquica
+  zona afectada con estructura jerárquica
 
-      Zona -> [Sector] -> [PuntoAtencion]
+      Zona - Sector - PuntoAtencion
 
-  Aquí están las reglas y las funciones RECURSIVAS sobre la jerarquía:
+  Aquí están las reglas y las funciones recursivas sobre la jerarquía:
   `total_afectados/1`, `contar_puntos/1` y `arbol/2`.
   `afectados` es lo registrado directamente en cada nivel; lo acumulado
   se calcula recursivamente.

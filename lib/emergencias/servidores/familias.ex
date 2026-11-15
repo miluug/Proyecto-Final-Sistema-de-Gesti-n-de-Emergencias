@@ -1,6 +1,6 @@
 defmodule Emergencias.Familias do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer de personas afectadas, su historial y los
+  GenServer de personas afectadas, su historial y los
   mensajes de familiares. Las reglas (estados válidos, búsqueda) están en
   `Emergencias.Dominio.Persona`.
 

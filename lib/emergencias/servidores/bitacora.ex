@@ -1,6 +1,6 @@
 defmodule Emergencias.Bitacora do
   @moduledoc """
-  SERVIDOR (el CÓMO): PROCESO INDEPENDIENTE (sin GenServer) que registra la actividad de cada usuario.
+  proceso independiente, sin GenServer, que registra la actividad de cada usuario.
 
   Se crea con `spawn_link` y funciona con un ciclo RECURSIVO de `receive`:
   recibe mensajes, los atiende y se vuelve a llamar a sí mismo.
@@ -26,7 +26,7 @@ defmodule Emergencias.Bitacora do
     {:ok, pid}
   end
 
-  # ---------------- API (paso de mensajes) ----------------
+  #  API (paso de mensajes)
 
   def registrar(usuario, accion, resultado) do
     enviar({:registrar, usuario, accion, resultado})
@@ -59,7 +59,7 @@ defmodule Emergencias.Bitacora do
     end
   end
 
-  # ---------------- Ciclo recursivo del proceso ----------------
+  #  Ciclo recursivo del proceso 
 
   defp ciclo do
     receive do

@@ -1,6 +1,6 @@
 defmodule Emergencias.Dominio.Mascota do
   @moduledoc """
-  DOMINIO (el QUÉ): reporte de mascota perdida o encontrada y el criterio
+  reporte de mascota perdida o encontrada y el criterio
   de similitud definido por el equipo (máximo 100 puntos):
 
     - misma especie ............ 40 (si la especie es distinta el puntaje es 0)
