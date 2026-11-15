@@ -11,7 +11,7 @@ end
 
 defmodule Emergencias.Dominio.Zona do
   @moduledoc """
-  DOMINIO (el QUÉ): zona afectada con estructura jerárquica
+  DOMINIO: zona afectada con estructura jerárquica
 
       Zona -> [Sector] -> [PuntoAtencion]
 

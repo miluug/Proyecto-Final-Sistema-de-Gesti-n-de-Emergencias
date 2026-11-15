@@ -1,6 +1,6 @@
 defmodule Emergencias.Dominio.Necesidad do
   @moduledoc """
-  DOMINIO (el QUÉ): necesidad puntual, sus estados, la prioridad y las reglas para asignarle recursos. Sin procesos ni archivos.
+  DOMINIO: necesidad puntual, sus estados, la prioridad y las reglas para asignarle recursos. Sin procesos ni archivos.
  `cantidad` es lo requerido y `asignada` lo que ya se tomó del inventario.
   """
 
@@ -49,8 +49,7 @@ defmodule Emergencias.Dominio.Necesidad do
   end
 
   @doc """
-  Selecciona RECURSIVAMENTE la necesidad más urgente de una lista
-  (mayor prioridad; en empate la de menor id, es decir, la más antigua).
+  Selecciona RECURSIVAMENTE la necesidad más urgente de una lista (mayor prioridad; en empate la de menor id, es decir, la más antigua).
   """
   def mas_urgente([]), do: nil
   def mas_urgente([necesidad]), do: necesidad

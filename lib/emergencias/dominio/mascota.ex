@@ -1,15 +1,7 @@
 defmodule Emergencias.Dominio.Mascota do
   @moduledoc """
-  DOMINIO (el QUÉ): reporte de mascota perdida o encontrada y el criterio
+  DOMINIO: reporte de mascota perdida o encontrada y el criterio
   de similitud definido por el equipo (máximo 100 puntos):
-
-    - misma especie ............ 40 (si la especie es distinta el puntaje es 0)
-    - mismo color .............. 25
-    - mismo tamaño ............. 15
-    - misma zona ............... 10
-    - características en común . 5 por palabra repetida (máximo 10)
-
-  Desde 60 puntos se considera "posible coincidencia".
   """
   @tipos [:perdida, :encontrada]
   @tamanos [:pequena, :mediana, :grande]
@@ -35,9 +27,7 @@ defmodule Emergencias.Dominio.Mascota do
   def umbral, do: @umbral
 
   @doc """
-  Recorre RECURSIVAMENTE la lista de mascotas perdidas y, para cada una,
-  compara contra todas las encontradas. Retorna [{perdida, encontrada, puntaje}]
-  solo con los pares que alcanzan el umbral.
+  Recorre RECURSIVAMENTE la lista de mascotas perdidas y, para cada una, compara contra todas las encontradas. Retorna [{perdida, encontrada, puntaje}] solo con los pares que alcanzan el umbral.
   """
   def coincidencias([], _encontradas, acumulado), do: acumulado
 

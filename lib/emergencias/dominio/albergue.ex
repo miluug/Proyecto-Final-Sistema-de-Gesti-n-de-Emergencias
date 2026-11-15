@@ -1,6 +1,6 @@
 defmodule Emergencias.Dominio.Albergue do
   @moduledoc """
-  DOMINIO (el QUÉ): albergue y sus reglas de capacidad.
+  DOMINIO: albergue y sus reglas de capacidad.
 
   `ocupantes` es un MapSet con los documentos de las personas alojadas:
   una persona no puede quedar registrada dos veces y la ocupación actual

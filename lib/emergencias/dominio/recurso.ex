@@ -1,8 +1,6 @@
 defmodule Emergencias.Dominio.Recurso do
   @moduledoc """
-  DOMINIO (el QUÉ): recurso del inventario y sus reglas: nunca cantidades
-  negativas, cómo se reparte una asignación entre varias bodegas, a dónde
-  llega una transferencia y qué recursos son críticos.
+  DOMINIO: recurso del inventario y sus reglas: nunca cantidades negativas, cómo se reparte una asignación entre varias bodegas, a dónde llega una transferencia y qué recursos son críticos.
   La categoría usa los mismos tipos que las necesidades.
   """
   alias Emergencias.Dominio.Necesidad
@@ -23,8 +21,7 @@ defmodule Emergencias.Dominio.Recurso do
   def total_disponible([recurso | resto]), do: recurso.cantidad + total_disponible(resto)
 
   @doc """
-  Reparte RECURSIVAMENTE la cantidad pedida entre varios recursos de la misma
-  categoría (por ejemplo, 2 bodegas de agua en la misma zona).
+  Reparte RECURSIVAMENTE la cantidad pedida entre varios recursos de la misma categoría (por ejemplo, 2 bodegas de agua en la misma zona).
   Retorna la lista [{codigo, cantidad_tomada}].
   """
   def repartir(_candidatos, 0, tomados), do: Enum.reverse(tomados)

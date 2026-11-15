@@ -1,6 +1,6 @@
 defmodule Emergencias.Dominio.Persona do
   @moduledoc """
-  DOMINIO (el QUÉ): persona afectada, sus estados válidos y cómo se busca.
+  DOMINIO: persona afectada, sus estados válidos y cómo se busca.
   `historial` guarda los cambios de estado como tuplas
   {fecha, estado_anterior, estado_nuevo, usuario} (el más reciente primero).
   """
