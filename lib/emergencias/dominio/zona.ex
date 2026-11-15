@@ -58,6 +58,36 @@ defmodule Emergencias.Dominio.Zona do
 
   #  Funciones RECURSIVAS
 
+  @spec total_afectados(
+          maybe_improper_list(
+            maybe_improper_list(maybe_improper_list(any(), [] | map()) | map(), [] | map())
+            | %{
+                :__struct__ =>
+                  Emergencias.Dominio.PuntoAtencion
+                  | Emergencias.Dominio.Sector
+                  | Emergencias.Dominio.Zona,
+                :afectados => any(),
+                optional(any()) => any()
+              },
+            []
+            | %{
+                :__struct__ =>
+                  Emergencias.Dominio.PuntoAtencion
+                  | Emergencias.Dominio.Sector
+                  | Emergencias.Dominio.Zona,
+                :afectados => any(),
+                optional(any()) => any()
+              }
+          )
+          | %{
+              :__struct__ =>
+                Emergencias.Dominio.PuntoAtencion
+                | Emergencias.Dominio.Sector
+                | Emergencias.Dominio.Zona,
+              :afectados => any(),
+              optional(any()) => any()
+            }
+        ) :: any()
   @doc """
   Total de personas afectadas acumulado: lo del nodo + lo de todos sus hijos.
   Funciona con una zona, un sector, un punto o una lista de cualquiera de ellos.
