@@ -1,9 +1,7 @@
 defmodule Emergencias.Comun do
   @moduledoc """
-  DOMINIO (el QUÉ): reglas generales compartidas por todos los módulos:
-  validación de entradas, generación de identificadores, fecha y filtros.
-
-  Las validaciones NO lanzan errores: retornan `{:ok, valor}` o `{:error, mensaje}`.
+  Funciones compartidas: validación de entradas, generación de identificadores, fecha y filtros.
+  Las validaciones no lanzan errores: retornan '{:ok, valor}' o '{:error, mensaje}'.
   """
 
   @doc "Fecha y hora actual en texto, ej: 2026-11-09 21:30:00"

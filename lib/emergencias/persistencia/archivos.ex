@@ -1,14 +1,12 @@
 defmodule Emergencias.Persistencia do
   @moduledoc """
-  PERSISTENCIA (el CÓMO): lectura y escritura de archivos de texto plano.
-
-  Cada registro se guarda en una línea y sus campos se separan con `|`.
+  Lee y escribe los archivos de texto plano. Cada registro es una línea y sus campos
+  se separan con '|'.
   Ejemplo (recursos.txt):
 
       R001|agua|agua|50|litros|centro_acopio_1|centro
 
-  Este módulo solo lee y escribe líneas; la conversión entre structs y
-  campos de texto está en `Emergencias.Registros`.
+  La conversión entre structs y campos de texto está en 'Emergencias.Registros'.
   """
 
   @separador "|"
