@@ -1,6 +1,6 @@
 defmodule Emergencias.Comun do
   @moduledoc """
-  DOMINIO (el QUÉ): reglas generales compartidas por todos los módulos:
+  DOMINIO: reglas generales compartidas por todos los módulos:
   validación de entradas, generación de identificadores, fecha y filtros.
 
   Las validaciones NO lanzan errores: retornan `{:ok, valor}` o `{:error, mensaje}`.
@@ -29,7 +29,7 @@ defmodule Emergencias.Comun do
     |> Kernel.+(1)
   end
 
-  # ---------------- Validaciones ----------------
+  # Validaciones de entradas: no lanzan errores, retornan {:ok, valor} o {:error, mensaje}
 
   def entero(texto, campo) do
     case Integer.parse(to_string(texto)) do
@@ -86,7 +86,7 @@ defmodule Emergencias.Comun do
   def validar_positivo(numero, _campo) when is_integer(numero) and numero > 0, do: :ok
   def validar_positivo(_numero, campo), do: {:error, "#{campo} debe ser mayor que cero"}
 
-  # ---------------- Filtros ----------------
+  # Filtros para búsquedas y listados
 
   @doc """
   Convierte las opciones escritas por el usuario (ej. %{"zona" => "centro"})
