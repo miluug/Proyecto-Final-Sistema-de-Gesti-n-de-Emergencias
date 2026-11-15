@@ -1,17 +1,15 @@
 defmodule Emergencias.Usuarios do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer que guarda los usuarios y las sesiones activas.
-  Las reglas de registro y autenticación están en `Emergencias.Dominio.Usuario`.
+  GenServer que guarda los usuarios registrados y los que tienen sesión abierta.
+  Si una sesión termina, marca al usuario como desconectado.
 
   Estado:
       %{
-        usuarios: %{"laura" => %Usuario{}},     # mapa: búsqueda rápida por nombre de usuario
-        conectados: %{"laura" => pid_sesion}    # usuarios con sesión abierta
+        usuarios: %{"laura" => %Usuario{}},
+        conectados: %{"laura" => pid_sesion}
       }
-
-  Monitorea cada proceso de sesión: si una sesión termina (o falla),
-  el usuario se marca como desconectado automáticamente.
   """
+  
   use GenServer
 
   alias Emergencias.{Persistencia, Registros}
@@ -38,7 +36,7 @@ defmodule Emergencias.Usuarios do
   def reiniciar, do: GenServer.call(__MODULE__, :reiniciar)
 
   # Callbacks
-  
+
   @impl true
   def init(:ok) do
     usuarios =

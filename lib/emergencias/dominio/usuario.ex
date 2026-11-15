@@ -1,8 +1,8 @@
 defmodule Emergencias.Dominio.Usuario do
   @moduledoc """
-  DOMINIO (el QUÉ): qué es un usuario y qué reglas cumple al registrarse
-  o autenticarse. No sabe nada de procesos ni de archivos.
+  Define el usuario del sistema y sus reglas de registro y autenticación.
   """
+
   alias Emergencias.Comun
 
   @tipos [:ciudadano, :voluntario, :coordinador, :administrador]
@@ -12,8 +12,8 @@ defmodule Emergencias.Dominio.Usuario do
   def tipos, do: @tipos
 
   @doc """
-  Regla de autenticación: contraseña correcta y sin otra sesión activa.
-  'conectados' es el conjunto (o mapa) de usuarios que ya tienen sesión.
+  Valida la contraseña y que el usuario no tenga ya una sesión abierta.
+  'conectados' es el mapa o conjunto de usuarios con sesión activa.
   """
   def autenticar(%__MODULE__{} = usuario, clave, conectados) do
     cond do
@@ -28,7 +28,7 @@ defmodule Emergencias.Dominio.Usuario do
     end
   end
 
-  @doc "Regla de registro: datos obligatorios y tipo válido."
+  @doc "Crea un usuario nuevo validando sus datos y el tipo."
   def crear(_usuario, _clave, nil, _zona, _nombre) do
     {:error, "Usuario nuevo: indique tipo y zona. Uso: connect usuario contraseña tipo zona [\"nombre completo\"]"}
   end
@@ -44,6 +44,6 @@ defmodule Emergencias.Dominio.Usuario do
     end
   end
 
-  @doc "La contraseña no se guarda en texto plano: se guarda su hash SHA-256."
+  @doc "Cifra la contraseña con SHA-256 para no guardarla en texto plano."
   def cifrar(clave), do: :crypto.hash(:sha256, clave) |> Base.encode16(case: :lower)
 end

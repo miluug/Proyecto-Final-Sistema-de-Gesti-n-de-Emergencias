@@ -1,17 +1,9 @@
 defmodule Emergencias.Sesion do
   @moduledoc """
-  SERVIDOR (el CÓMO): PROCESO INDEPENDIENTE que representa la sesión de UN usuario conectado.
-
-  Cada usuario conectado tiene su propio proceso (creado por el
-  DynamicSupervisor `Emergencias.SesionesSupervisor`), por eso varios
-  usuarios pueden ejecutar comandos al mismo tiempo, en paralelo.
-
-  La sesión guarda los datos del usuario (nombre, rol y zona) y ejecuta
-  los comandos que recibe por mensaje:
+  Proceso de sesión de un usuario conectado. Recibe comandos por mensaje, los ejecuta y responde:
     {:ejecutar, pid_origen, linea}  -> responde {:respuesta, pid_sesion, resultado}
-    :cerrar                          -> termina el proceso (disconnect)
+    :cerrar                          -> termina el proceso
   """
-  
   alias Emergencias.Comandos
 
   @tiempo_espera 15_000
@@ -42,7 +34,7 @@ defmodule Emergencias.Sesion do
 
   def cerrar(pid), do: send(pid, :cerrar)
 
-  # Ciclo RECURSIVO: atiende un mensaje y se vuelve a llamar con el mismo estado
+  # Atiende un mensaje y se vuelve a llamar (recursión)
   defp ciclo(usuario) do
     receive do
       {:ejecutar, origen, linea} ->
@@ -58,9 +50,7 @@ end
 
 defmodule Emergencias.SesionesSupervisor do
   @moduledoc """
-  DynamicSupervisor: crea un proceso de sesión cada vez que un usuario se
-  conecta. Se usa un supervisor DINÁMICO porque no se sabe de antemano
-  cuántos usuarios se van a conectar.
+  Supervisor dinámico que crea un proceso de sesión por cada usuario que se conecta.
   """
   use DynamicSupervisor
 
