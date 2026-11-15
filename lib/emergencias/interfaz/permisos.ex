@@ -1,10 +1,7 @@
 defmodule Emergencias.Permisos do
   @moduledoc """
-  INTERFAZ (el CÓMO): catálogo de comandos: rol mínimo necesario y forma de uso.
-
-  Jerarquía de roles: ciudadano (1) < voluntario (2) < coordinador (3) < administrador (4).
-  Un usuario puede ejecutar un comando si el peso de su rol es mayor o igual
-  al del rol mínimo del comando.
+  Catálogo de comandos con el rol mínimo necesario para usar cada uno.
+  Roles de menor a mayor: ciudadano (1), voluntario (2), coordinador (3), administrador (4).
   """
 
   @comandos %{

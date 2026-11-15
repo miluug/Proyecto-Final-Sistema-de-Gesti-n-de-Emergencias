@@ -1,13 +1,9 @@
 defmodule Emergencias.Application do
   @moduledoc """
-  Punto de arranque de la aplicación.
-
-  Crea el árbol de supervisión principal (estrategia :one_for_one):
-  si un proceso hijo falla, el supervisor reinicia solamente ese hijo
-  y como cada GenServer vuelve a leer sus archivos de texto en `init/1`,
-  el estado se recupera sin afectar a los demás componentes.
+  Arranca la aplicación y su árbol de supervisión. Si un proceso falla, el supervisor
+  lo reinicia y ese proceso vuelve a leer sus datos desde el archivo.
   """
-  
+
   use Application
 
   @impl true

@@ -1,15 +1,8 @@
 defmodule Emergencias.CLI do
   @moduledoc """
-  INTERFAZ (el CÓMO): consola interactiva del sistema.
-
-  Ejecutar con:
+  Consola interactiva del sistema. Se inicia con:
       mix run -e "Emergencias.CLI.main()"
-  o dentro de iex -S mix:
-      Emergencias.CLI.main()
-
-  Cada consola maneja un usuario a la vez. Para tener varios usuarios
-  trabajando al mismo tiempo sobre el mismo sistema se abren otras consolas
-  conectadas al mismo nodo (ver README) o se ejecuta scripts/demo_concurrencia.exs.
+  o dentro de `iex -S mix` con `Emergencias.CLI.main()`.
   """
   alias Emergencias.Cliente
 

@@ -1,8 +1,7 @@
 defmodule Emergencias.Cliente do
   @moduledoc """
-  INTERFAZ (el CÓMO): punto de entrada para los usuarios (lo usan la consola, el script de
-  demostración y las pruebas). Maneja connect / disconnect y envía los
-  demás comandos al proceso de sesión del usuario.
+  Permite conectarse y desconectarse, y envía los comandos a la sesión del usuario.
+  Lo usan la consola, el script de demostración y las pruebas.
   """
 
   alias Emergencias.{Bitacora, Sesion, SesionesSupervisor, Usuarios}
@@ -53,5 +52,5 @@ defmodule Emergencias.Cliente do
 
   defp mensaje_conexion(usuario, :autenticado),
     do: "Bienvenido(a) de nuevo: #{usuario}"
-    
+
 end

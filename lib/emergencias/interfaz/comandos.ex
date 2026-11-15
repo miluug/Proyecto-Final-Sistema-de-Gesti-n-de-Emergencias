@@ -1,20 +1,8 @@
 defmodule Emergencias.Comandos do
   @moduledoc """
-  INTERFAZ (el CÓMO): interpreta los comandos de texto escritos por el usuario
-  y los traduce a llamadas a los servidores. No contiene reglas del negocio:
-  solo convierte texto en datos, valida el formato de las entradas y muestra
-  el resultado.
-
-  Flujo de 'ejecutar/2':
-    1. 'tokenizar/1' (RECURSIVA) separa la línea en palabras respetando comillas.
-    2. Se verifica que el comando exista y que el rol del usuario lo permita.
-    3. Se separan los argumentos posicionales de las opciones clave=valor.
-    4. Se VALIDAN las entradas (números, opciones, existencia de zonas...) ANTES
-       de llamar al GenServer correspondiente.
-    5. Se registra la actividad en la Bitácora.
-
-  Siempre retorna {:ok, texto} o {:error, texto}; nunca lanza errores por
-  situaciones esperadas.
+  Interpreta los comandos escritos por el usuario y los envía a los servidores.
+  Valida el formato de las entradas antes de llamarlos y siempre retorna
+  {:ok, texto} o {:error, texto}.
   """
 
   alias Emergencias.{Albergues, Bitacora, Comun, Familias, Inventario, Mascotas, Necesidades}
@@ -54,8 +42,7 @@ defmodule Emergencias.Comandos do
   # Análisis de la línea
 
   @doc """
-  Separa una línea en palabras. Lo que está entre comillas queda como una sola palabra.
-  Es RECURSIVA: procesa un carácter y se llama con el resto.
+  Separa una línea en palabras; lo que va entre comillas queda como una sola palabra.
 
       iex> tokenizar(~s(register_need agua 30 critica centro "Punto sector 3"))
       ["register_need", "agua", "30", "critica", "centro", "Punto sector 3"]
@@ -502,5 +489,5 @@ defmodule Emergencias.Comandos do
         "\n(La persona no está registrada en el sistema de familiares)"
     end
   end
-  
+
 end
