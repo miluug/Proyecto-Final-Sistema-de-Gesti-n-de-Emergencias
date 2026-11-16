@@ -1,3 +1,6 @@
+# Demostración del flujo del enunciado y del conflicto concurrente.
+# Ejecutar desde la carpeta del proyecto: mix run scripts/demo_concurrencia.exs
+# Usa la carpeta datos_demo para no mezclar con los datos reales.
 
 
 alias Emergencias.{Cliente, Inventario}

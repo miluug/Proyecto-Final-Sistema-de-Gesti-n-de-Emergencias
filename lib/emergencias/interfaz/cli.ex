@@ -2,16 +2,17 @@ defmodule Emergencias.CLI do
   @moduledoc """
   Consola interactiva del sistema. Se inicia con:
       mix run -e "Emergencias.CLI.main()"
-  o dentro de `iex -S mix` con `Emergencias.CLI.main()`.
+  o dentro de 'iex -S mix' con 'Emergencias.CLI.main()'.
   """
   alias Emergencias.Cliente
 
   def main do
     """
-    =====================================================
+
       SISTEMA DE COORDINACIÓN Y GESTIÓN DE EMERGENCIAS
       Atención posterior a un terremoto
-    =====================================================
+
+
     Conéctese con: connect usuario contraseña tipo zona ["nombre completo"]
     Tipos: ciudadano, voluntario, coordinador, administrador
     Escriba help (ya conectado) para ver los comandos y salir para terminar.

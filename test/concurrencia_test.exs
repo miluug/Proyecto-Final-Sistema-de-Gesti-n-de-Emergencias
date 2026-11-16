@@ -24,7 +24,7 @@ defmodule Emergencias.ConcurrenciaTest do
       "register_resource R001 agua 50 litros centro_acopio_1"
     ])
 
-    # Las dos asignaciones se lanzan AL MISMO TIEMPO desde dos sesiones distintas
+    # Las dos asignaciones se lanzan al mismo tiempo desde dos sesiones distintas
     tareas = [
       Task.async(fn -> Cliente.ejecutar(laura, "assign_resource N001 agua 30") end),
       Task.async(fn -> Cliente.ejecutar(pedro, "assign_resource N002 agua 25") end)

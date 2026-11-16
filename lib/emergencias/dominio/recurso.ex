@@ -1,6 +1,7 @@
 defmodule Emergencias.Dominio.Recurso do
   @moduledoc """
-  DOMINIO: recurso del inventario y sus reglas: nunca cantidades negativas, cómo se reparte una asignación entre varias bodegas, a dónde llega una transferencia y qué recursos son críticos.
+  Recurso del inventario y sus reglas: no permitir cantidades negativas, repartir una
+  asignación entre varias bodegas, hacer transferencias y detectar recursos críticos.
   La categoría usa los mismos tipos que las necesidades.
   """
   alias Emergencias.Dominio.Necesidad
@@ -16,12 +17,13 @@ defmodule Emergencias.Dominio.Recurso do
   def calcular(:salida, actual, cantidad),
     do: {:error, "No hay suficiente inventario: disponible #{actual}, solicitado #{cantidad}"}
 
-  @doc "Suma RECURSIVA de las cantidades disponibles de una lista de recursos."
+  @doc "Suma las cantidades disponibles de una lista de recursos recursivamente."
   def total_disponible([]), do: 0
   def total_disponible([recurso | resto]), do: recurso.cantidad + total_disponible(resto)
 
   @doc """
-  Reparte RECURSIVAMENTE la cantidad pedida entre varios recursos de la misma categoría (por ejemplo, 2 bodegas de agua en la misma zona).
+  Reparte recursivamente la cantidad pedida entre varios recursos de la misma categoría,
+  por ejemplo 2 bodegas de agua en la misma zona.
   Retorna la lista [{codigo, cantidad_tomada}].
   """
   def repartir(_candidatos, 0, tomados), do: Enum.reverse(tomados)
@@ -39,7 +41,7 @@ defmodule Emergencias.Dominio.Recurso do
     |> Util2.ordenar(:asc, & &1.codigo)
   end
 
-  @doc "Regla de asignación: si alcanza, retorna {:ok, [{codigo, cantidad}]}."
+  @doc "Valida si se puede asignar la cantidad; si alcanza, retorna {:ok, [{codigo, cantidad}]}."
   def planear_toma(candidatos, categoria, cantidad, zona) do
     disponible = total_disponible(candidatos)
 

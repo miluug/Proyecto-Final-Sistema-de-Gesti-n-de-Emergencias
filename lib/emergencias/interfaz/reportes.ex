@@ -1,8 +1,7 @@
 defmodule Emergencias.Reportes do
   @moduledoc """
-  INTERFAZ (el CÓMO): arma los reportes de texto (summary, recursos críticos,
-  estado de una zona) consultando varios servidores. Los cálculos (qué es
-  crítico, totales recursivos) están en el dominio.
+  Arma los reportes de texto (resumen, recursos críticos y estado de una zona)
+  consultando varios servidores.
   """
   alias Emergencias.{Albergues, Familias, Inventario, Mascotas, Necesidades, Zonas}
   alias Emergencias.Dominio.{Albergue, Necesidad, Recurso, Zona}

@@ -1,10 +1,7 @@
 defmodule Emergencias.Formato do
   @moduledoc """
-  INTERFAZ (el CÓMO): cómo se MUESTRA cada struct del dominio en la consola.
-  Se implementa el protocolo String.Chars (como en el ejemplo Reserva visto
-  en clase) y las listas se convierten a texto con Util2.
-  El dominio no sabe cómo se imprime: si cambia la presentación, solo se
-  modifica este archivo.
+  Define cómo se muestra cada struct en la consola (protocolo String.Chars) y
+  convierte listas a texto usando Util2.
   """
 
   @doc "Convierte una lista en texto con viñetas usando Util2."

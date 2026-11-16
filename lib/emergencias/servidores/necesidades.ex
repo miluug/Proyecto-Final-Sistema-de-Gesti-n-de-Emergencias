@@ -1,15 +1,11 @@
 defmodule Emergencias.Necesidades do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer que guarda las necesidades.
-  Las reglas (estados, prioridad, qué se puede asignar) están en
-  `Emergencias.Dominio.Necesidad`.
+  GenServer que guarda las necesidades. Las reglas (estados, prioridad, qué se puede asignar)
+  están en 'Emergencias.Dominio.Necesidad'.
 
-  La asignación de recursos se hace COMPLETA dentro de este proceso:
-  1. valida la necesidad con las reglas del dominio,
-  2. pide los recursos al GenServer Inventario (que también es secuencial),
-  3. actualiza la necesidad.
-  Como ambos procesos atienden un mensaje a la vez, dos asignaciones simultáneas
-  sobre la misma necesidad o el mismo recurso no generan inconsistencias.
+  Para asignar recursos, este proceso valida la necesidad, pide los recursos al GenServer
+  Inventario y actualiza la necesidad. Como ambos atienden un mensaje a la vez, dos
+  asignaciones simultáneas sobre la misma necesidad o el mismo recurso no generan inconsistencias.
   """
   use GenServer
 
@@ -18,7 +14,7 @@ defmodule Emergencias.Necesidades do
 
   @archivo "necesidades.txt"
 
-  # ---------------- API ----------------
+  #API
 
   def start_link(_opciones), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
 
@@ -35,7 +31,7 @@ defmodule Emergencias.Necesidades do
   def siguiente, do: GenServer.call(__MODULE__, :siguiente)
   def reiniciar, do: GenServer.call(__MODULE__, :reiniciar)
 
-  # ---------------- Callbacks ----------------
+  #Callbacks
 
   @impl true
   def init(:ok) do
@@ -118,7 +114,7 @@ defmodule Emergencias.Necesidades do
     {:reply, lista, estado}
   end
 
-  # La prioridad se usa para SELECCIONAR la siguiente necesidad pendiente a atender
+  # Selecciona la siguiente necesidad pendiente según su prioridad
   def handle_call(:siguiente, _from, estado) do
     pendientes = estado.necesidades |> Map.values() |> Enum.filter(&(&1.estado == :pendiente))
 
@@ -133,7 +129,7 @@ defmodule Emergencias.Necesidades do
     {:reply, :ok, %{necesidades: %{}, siguiente: 1}}
   end
 
-  # ---------------- Auxiliares ----------------
+  #Auxiliares
 
   defp buscar(estado, id) do
     case Map.fetch(estado.necesidades, String.upcase(id)) do

@@ -1,14 +1,11 @@
 defmodule Emergencias.Inventario do
   @moduledoc """
-  SERVIDOR (el CÓMO): GenServer que guarda los recursos y el historial de
-  movimientos. Las reglas (no negativos, repartir, transferencias) están en
-  `Emergencias.Dominio.Recurso`.
+  GenServer que guarda los recursos y el historial de movimientos. Las reglas (no negativos,
+  repartir, transferencias) están en 'Emergencias.Dominio.Recurso'.
 
-  REGLA DE CONCURRENCIA: todas las operaciones que cambian cantidades pasan
-  por este único proceso. Un GenServer atiende los mensajes de su buzón UNO A
-  LA VEZ, por eso si varias solicitudes intentan tomar el mismo recurso al
-  mismo tiempo, cada una ve el inventario real que dejó la anterior y nunca se
-  asigna más de lo disponible.
+  Todas las operaciones que cambian cantidades pasan por este proceso, que atiende un mensaje
+  a la vez. Por eso, si varias solicitudes intentan tomar el mismo recurso al mismo tiempo,
+  cada una ve el inventario que dejó la anterior y nunca se asigna más de lo disponible.
 
   Estado:
       %{

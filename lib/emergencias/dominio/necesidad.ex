@@ -1,7 +1,7 @@
 defmodule Emergencias.Dominio.Necesidad do
   @moduledoc """
-  DOMINIO: necesidad puntual, sus estados, la prioridad y las reglas para asignarle recursos. Sin procesos ni archivos.
- `cantidad` es lo requerido y `asignada` lo que ya se tomó del inventario.
+  Necesidad puntual de ayuda: sus estados, su prioridad y las reglas para asignarle recursos.
+  'cantidad' es lo requerido y 'asignada' lo que ya se tomó del inventario.
   """
 
   @tipos [:agua, :alimentos, :medicamentos, :primeros_auxilios, :refugio, :transporte, :rescate, :otra]
@@ -49,7 +49,8 @@ defmodule Emergencias.Dominio.Necesidad do
   end
 
   @doc """
-  Selecciona RECURSIVAMENTE la necesidad más urgente de una lista (mayor prioridad; en empate la de menor id, es decir, la más antigua).
+  Retorna la necesidad más urgente de una lista recursivamente.
+  Si hay empate de prioridad, gana la de menor id, es decir, la más antigua.
   """
   def mas_urgente([]), do: nil
   def mas_urgente([necesidad]), do: necesidad
@@ -67,7 +68,7 @@ defmodule Emergencias.Dominio.Necesidad do
     end
   end
 
-  @doc "Regla: ¿se le pueden asignar `cantidad` unidades de `tipo`?"
+  @doc "Valida si se le pueden asignar 'cantidad' unidades de 'tipo'."
   def validar_asignacion(necesidad, tipo, cantidad) do
     cond do
       cerrada?(necesidad) ->
@@ -90,7 +91,7 @@ defmodule Emergencias.Dominio.Necesidad do
     end
   end
 
-  @doc "Regla: ¿puede pasar al nuevo estado? (no se cierra dos veces)"
+  @doc "Valida si puede pasar al nuevo estado; una necesidad cerrada no se puede cerrar de nuevo."
   def validar_transicion(necesidad, nuevo_estado) do
     cond do
       cerrada?(necesidad) ->
@@ -104,6 +105,6 @@ defmodule Emergencias.Dominio.Necesidad do
     end
   end
 
-  @doc "Necesidad después de recibir recursos."
+  @doc "Retorna la necesidad después de recibir recursos."
   def asignar(necesidad, cantidad), do: %{necesidad | asignada: necesidad.asignada + cantidad, estado: :asignada}
 end

@@ -34,7 +34,7 @@ defmodule Emergencias.Sesion do
 
   def cerrar(pid), do: send(pid, :cerrar)
 
-  # Atiende un mensaje y se vuelve a llamar (recursión)
+  # Atiende un mensaje y se vuelve a llamar d(recursión)
   defp ciclo(usuario) do
     receive do
       {:ejecutar, origen, linea} ->
